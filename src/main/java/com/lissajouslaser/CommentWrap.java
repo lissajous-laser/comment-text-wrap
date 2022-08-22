@@ -72,25 +72,6 @@ public class CommentWrap {
     }
 
     /**
-     * Main, used for testing.
-     */
-    public static void main(String[] args) {
-        CommentWrap cw = new CommentWrap();
-        String formattedComment = cw.wrap(
-            "            // it was the worst of times,\n"
-            + "            \n"
-            + "            // it was the age of foolishness,\n"
-            + "            \n"
-            + "            // it was the epoch of incredulity\n"
-        );
-        System.out.println(formattedComment
-        );
-
-        String[] form1 = cw.sanitiseBlock("".split("\n"));
-        System.out.println(form1 + " " + form1.length);
-    }
-
-    /**
      * Wraps comment code.
      */
     public String wrap(String comment) {
@@ -174,6 +155,9 @@ public class CommentWrap {
      * - single line comment using multi line comment symbol.
      * - comment uses in-line comment symbol but there is only
      *   one line, hard to work out line symbol.
+     * - double spaces are significant.
+     * - comments is all single line dot points
+     * - fancy ascii borders
      * Known incompatibilies for block comment symbols
      * - markup languages html, xml <!--  -->
      * - Lua --[  ]
@@ -304,9 +288,11 @@ public class CommentWrap {
     private String rebuildBlock(
             ArrayList<String> words,
             String lineSymbol) {
-        StringBuilder strBuilder = new StringBuilder();
 
+        StringBuilder strBuilder = new StringBuilder();
         int lineLength = 0;
+        int lineLimit = lineLimit();
+
         for (int i = 0; i < indentLevel; i++) {
             strBuilder.append(' ');
         }
@@ -315,18 +301,7 @@ public class CommentWrap {
         if (lineSymbol != null) {
             strBuilder.append(lineSymbol);
             lineLength += lineSymbol.length();
-        } else {
-            if (indentLevel > 0) {
-                /*
-                * If there is no in-line comment symbol, remove
-                * one space because a space is added before each
-                * word.
-                */
-                strBuilder.deleteCharAt(strBuilder.length() - 1);
-            }
         }
-
-        int lineLimit = lineLimit();
 
         for (String word : words) {
             if (lineLength + 1 + word.length() > lineLimit) {
@@ -341,15 +316,19 @@ public class CommentWrap {
                 if (lineSymbol != null) {
                     strBuilder.append(lineSymbol);
                     lineLength += lineSymbol.length();
-                } else {
-                    if (indentLevel > 0) {
-                        strBuilder.deleteCharAt(strBuilder.length() - 1);
-                    }
-
                 }
             }
-            strBuilder.append(" " + word);
-            lineLength = lineLength + 1 + word.length();
+            // We don't want to use a space separater if text
+            // is meant to immediately follow a newline or
+            // the indent.
+            if (strBuilder.length() != 0
+                    && strBuilder.charAt(strBuilder.length() - 1) != '\n'
+                    && strBuilder.charAt(strBuilder.length() - 1) != ' ') {
+                strBuilder.append(" ");
+                lineLength++;
+            }
+            strBuilder.append(word);
+            lineLength += word.length();
         }
         strBuilder.append('\n');
 
@@ -392,15 +371,6 @@ public class CommentWrap {
         }
         return linesWithoutLineSymbol;
     }
-
-    /*
-     * Split.
-     * Look for multi-line.
-     * Look for single-line.
-     * Look for Indent.
-     * If single line comment symbol is contained within
-     * multi-line comment, use C-style
-     */
 
     /*
      * Gets the mode of the line indent levels in a text
@@ -491,7 +461,7 @@ public class CommentWrap {
      * @return null if no matches.
      */
     private String bookmatchedStart(String comment) {
-        final int maxBlockEndLength = 3;
+        final int maxBlockEndLength = 65;
         String trimmedComment = comment.trim();
         var strBuilder = new StringBuilder();
 

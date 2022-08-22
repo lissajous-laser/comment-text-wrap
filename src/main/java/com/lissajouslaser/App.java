@@ -1,5 +1,7 @@
 package com.lissajouslaser;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,9 +21,9 @@ public class App extends Application {
     private CommentWrap commentWrap;
     private final int windowWidth = 720;
     private final int windowHeight = 360;
-    private final int textAreaHeight = 800;
+    private final int textAreaHeight = 2160;
     private final int buttonWidth = 240;
-    private final int padding = 5;
+    private final int padding = 6;
     private final int textSize = 13;
 
     @Override
@@ -30,7 +32,15 @@ public class App extends Application {
 
         TextArea text = new TextArea("");
         text.setPrefHeight(textAreaHeight);
-        text.setFont(Font.font("Noto Sans Mono", textSize));
+
+        try {
+            text.setFont(
+                Font.loadFont(new
+                        FileInputStream("src/main/resources/NotoSansMono-Regular.ttf"), textSize)
+            );
+        } catch (IOException e) {
+            text.setFont(Font.getDefault());
+        }
 
         Button wrapButton = new Button("Wrap Text");
         wrapButton.setPrefWidth(buttonWidth);
@@ -52,7 +62,7 @@ public class App extends Application {
         var scene = new Scene(topLayout, windowWidth, windowHeight);
 
         stage.setScene(scene);
-        stage.setTitle("text Wrap");
+        stage.setTitle("Comment Text Wrap");
         stage.show();
     }
 
