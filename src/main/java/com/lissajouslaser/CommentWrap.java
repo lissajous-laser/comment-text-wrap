@@ -123,52 +123,6 @@ public class CommentWrap {
         return addEnds(rebuiltBlock, blockStartSymbol, lineSymbol);
     }
 
-    /*
-     * Assumptions:
-     * Comment symbols are not letters or numbers, and to not
-     * exceed 3 characters in length.
-     * Single-line comment symbols will be at the start of
-     * each line.
-     * Multi-line comment symbols may be at the start, and
-     * end, are mirror images, and may have a different
-     * symbol at each line (like C-style).
-     * User indents by spaces. Program outputs indentation in
-     * spaces.
-     * C-style (java, C, C++, Javascript):
-     * // single-line
-     * multi-line (2 ways)
-     * Lisp
-     * ; single-line
-     * Scripting langs (Perl, Python, Ruby, PHP)
-     * # single-line
-     * (Haskell, Lua, SQL)
-     * -- single-line
-     * Edge cases
-     * - no space between comment symbol and start of text
-     * - widow or orphan lines selected
-     * - comment block start and/or end symbol group in same
-     * line as comment text.
-     * - single word greater than 80 words
-     * - indent level greater than maximum line length -> all
-     * comments will be guaranteed 20 character length.
-     * - mirror image characters {} () <> {}
-     * - single line comment using multi line comment symbol.
-     * - comment uses in-line comment symbol but there is only
-     *   one line, hard to work out line symbol.
-     * - double spaces are significant.
-     * - comments is all single line dot points
-     * - fancy ascii borders
-     * Known incompatibilies for block comment symbols
-     * - markup languages html, xml <!--  -->
-     * - Lua --[  ]
-     * - Ruby =begin  =end
-     * - Perl =begin  =cut
-     * - Matlab %{  %}
-     * - Clojure (comment  )
-     * Implementation:
-     * - If the comment is single line, no formatting is done
-     */
-
     /**
      * Adds multi-line comment symbols if required.
      **/
