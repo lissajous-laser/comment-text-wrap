@@ -1,13 +1,13 @@
-## Comment Text Wrap
+# Comment Text Wrap
 
-# Background
+## Background
 Text editors and IDEs generally don't automatically wrap text for programming code, so it is up to the author to put in sensible line breaks.
 
 Comments in code should be kept to a length that is easy to read. In typography, although opinions vary, a line length of between 2 - 3 alphabets (52 to 78 characters) is often considered an suitable line length.
 
 It can be tedious to manually format a comment section, especially when adding to an existing comment at any point except the end. You have to reflow words into the following lines to maintain the line length.
 
-# Implementation
+## Implementation
 This is a GUI application using JavaFX. The program will attempt to reformat code comments so that the text is wrapped at a suitable line length. It is designed to be language agnostic, to work with single line comments and multi-line comments.
 
 ### Limitations
@@ -18,19 +18,20 @@ This is a GUI application using JavaFX. The program will attempt to reformat cod
   - `(* comment *)` in OCaml or Pascal also works, because the symbol pairs (), {}, [], <> have been made to be matched. 
   - `%{ comment %}` in MATLAB will not work, because `%{` and `%}` are not the reverse of each other.
  The following table illustrates which multi-line comments will work for some programming languages:
-| Language (Family)                           | Block Comment         | Works  |
-| --------------------------------------------| ----------------------| ------ |
-| C syntax (C, C++, C#, Java, Javascript, PHP)| `/* comment */`       | Yes    |
-| Python pseudo-comment                       | `""" comment """`     | Yes    |
-| Haskell                                     | `{- comment -}`       | Yes    |
-| Julia                                       | `#= comment =#`       | Yes    |
-| ML syntax (OCaml, F#)                       | `(* comment *)`       | Yes    |
-| Ruby                                        | `=begin comment =end` | No     |
-| Perl                                        | `=begin comment =cut` | No     |
-| Lua                                         | `--[[ comment --]]`   | No     |
-| MATLAB                                      | `%{ comment %}`       | No     |
 
- Single line comments will work for the vast majority of languages.
+  | Language (Family)                           | Block Comment         | Works  |
+  | ------------------------------------------- | --------------------- | ------ |
+  | C syntax (C, C++, C#, Java, Javascript, PHP)| `/* comment */`       | Yes    |
+  | Python pseudo-comment                       | `""" comment """`     | Yes    |
+  | Haskell                                     | `{- comment -}`       | Yes    |
+  | Julia                                       | `#= comment =#`       | Yes    |
+  | ML syntax (OCaml, F#)                       | `(* comment *)`       | Yes    |
+  | Ruby                                        | `=begin comment =end` | No     |
+  | Perl                                        | `=begin comment =cut` | No     |
+  | Lua                                         | `--[[ comment --]]`   | No     |
+  | MATLAB                                      | `%{ comment %}`       | No     |
+
+  Single line comments will work for the vast majority of languages.
 - Comment blocks with ascii borders will only work if the top and bottom borders are reverse of each other and if no \s or \w characters are used.
 
 ### Text Wrapping
