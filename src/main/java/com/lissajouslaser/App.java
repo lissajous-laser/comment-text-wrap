@@ -1,29 +1,36 @@
 package com.lissajouslaser;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
  * JavaFX App.
  */
 public class App extends Application {
-    private final int windowWidth = 640;
-    private final int windowHeight = 480;
-    private final int textAreaHeight = 720;
+    private CommentWrap commentWrap;
+    private final int windowWidth = 720;
+    private final int windowHeight = 360;
+    private final int textAreaHeight = 800;
     private final int buttonWidth = 240;
     private final int padding = 5;
+    private final int textSize = 13;
 
     @Override
-    public void start(final Stage stage) {
+    public void start(Stage stage) {
+        commentWrap = new CommentWrap();
 
         TextArea text = new TextArea("");
         text.setPrefHeight(textAreaHeight);
+        text.setFont(Font.font("Noto Sans Mono", textSize));
 
         Button wrapButton = new Button("Wrap Text");
         wrapButton.setPrefWidth(buttonWidth);
@@ -35,6 +42,12 @@ public class App extends Application {
         topLayout.getChildren().add(text);
         topLayout.getChildren().add(centeredButton);
 
+        wrapButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                text.setText(commentWrap.wrap(text.getText()));
+            }
+        });
 
         var scene = new Scene(topLayout, windowWidth, windowHeight);
 

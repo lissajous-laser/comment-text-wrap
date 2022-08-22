@@ -8,10 +8,50 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
+ * Terms used:
+ *
+ * - comment:
+ *   the comment as a single string
+ *
+ * - lines:
+ *   the comment split by newline
+ *
+ * - block start symbol:
+ *   a symbol or group of symbols used for the start of a
+ *   multi-line comment
+ *
+ * - block finish symbol:
+ *   like block start symbol but for the end
+ *
+ * - block end symbol: either a block start symbol or a block
+ *   finish symbol
+ *
+ * - line symbol:
+ *   a symbol or group of symbols used for an in-line comment
+ *
+ * - sanitised lines:
+ *   lines where none of the lines cantain just whitespace
+ *   characters
+ *
+ * - lines without ends:
+ *   lines where it is known that the block start symbol and
+ *   block end symbol have been removed
+ *
+ * - words:
+ *   comment split by word without block end symbols or line
+ *   symbols
+ *
+ * - rebuilt block:
+ *   lines which have had text wrapping and line symbols applied
+ *   (if any), but have not had the end symbols applied (if any)
+ */
+
 /**
  * Privdes the wrap() method for neatly wrapping text.
  */
 public class CommentWrap {
+    // Pairs of matched symbols that delimit a porton of text.
     private final Map<Character, Character> openingClosingPairs;
     private final int maxLineLength = 80;
     private final int maxTextBlockLength = 65;
@@ -19,7 +59,7 @@ public class CommentWrap {
     private int indentLevel;
 
     /**
-     * Constructer.
+     * Constructor.
      */
     public CommentWrap() {
         indentLevel = 0;
@@ -31,21 +71,43 @@ public class CommentWrap {
         openingClosingPairs.put('{', '}');
     }
 
-    public void setIndentLevel(int indentLevel) {
-        this.indentLevel = indentLevel;
+    /**
+     * Main, used for testing.
+     */
+    public static void main(String[] args) {
+        CommentWrap cw = new CommentWrap();
+        String formattedComment = cw.wrap(
+            "            // it was the worst of times,\n"
+            + "            \n"
+            + "            // it was the age of foolishness,\n"
+            + "            \n"
+            + "            // it was the epoch of incredulity\n"
+        );
+        System.out.println(formattedComment
+        );
+
+        String[] form1 = cw.sanitiseBlock("".split("\n"));
+        System.out.println(form1 + " " + form1.length);
     }
 
     /**
      * Wraps comment code.
      */
     public String wrap(String comment) {
+        String[] sanitisedLines = sanitiseBlock(comment.split("\n"));
+        // Don't process comments as a single line, too
+        // to work out lineSymbol.
+        if (sanitisedLines.length <= 1) {
+            return comment;
+        }
 
         // Group of symbols indicating start of comment block.
         String blockStartSymbol = bookmatchedStart(comment);
+
         String commentWithoutEnds = removeEnds(comment, blockStartSymbol);
         String[] sanitisedLinesWithoutEnds =
                 sanitiseBlock(commentWithoutEnds.split("\n"));
-        String[] sanitisedLines = sanitiseBlock(comment.split("\n"));
+
 
         indentLevel = modeIndentLevel(sanitisedLines);
 
@@ -58,7 +120,7 @@ public class CommentWrap {
             // This code block looks wierd because we use the length
             // of sanitisedLinesWithoutEnds to calculate range
             // because we can be sure that sanitiseBlock() only
-            // removes the last line with it was empty.
+            // removes the last if it was empty.
             lineSymbol = singleLineSymbol(
                     Arrays.copyOfRange(
                             sanitisedLines,
@@ -119,6 +181,8 @@ public class CommentWrap {
      * - Perl =begin  =cut
      * - Matlab %{  %}
      * - Clojure (comment  )
+     * Implementation:
+     * - If the comment is single line, no formatting is done
      */
 
     /**
@@ -426,7 +490,7 @@ public class CommentWrap {
      * characters.
      * @return null if no matches.
      */
-    public String bookmatchedStart(String comment) {
+    private String bookmatchedStart(String comment) {
         final int maxBlockEndLength = 3;
         String trimmedComment = comment.trim();
         var strBuilder = new StringBuilder();
@@ -461,7 +525,7 @@ public class CommentWrap {
     /**
      * Remove lines with only whitespace.
      */
-    public String[] sanitiseBlock(String[] lines) {
+    private String[] sanitiseBlock(String[] lines) {
 
         String[] sanitisedLines = Arrays
                 .stream(lines)
@@ -489,6 +553,9 @@ public class CommentWrap {
             var strBuilder = new StringBuilder();
 
             for (int i = 0; i < 2; i++) {
+                if (i >= trimmedLine.length()) {
+                    continue;
+                }
                 char nextChar = trimmedLine.charAt(i);
 
                 if (Character.toString(nextChar).matches("[\\s\\w]")) {
@@ -536,4 +603,5 @@ public class CommentWrap {
                 new OrderStringByLength());
         return mostCommonGroups.get(mostCommonGroups.size() - 1);
     }
+
 }

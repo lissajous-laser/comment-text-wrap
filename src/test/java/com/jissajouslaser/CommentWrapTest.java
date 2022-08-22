@@ -300,4 +300,64 @@ public class CommentWrapTest {
         );
     }
 
+    @Test
+    public void someLinesHaveOneCharacter() {
+        String formattedComment = cw.wrap(
+            "           /*\n"
+            + "            *\n"
+            + "            * it was the worst of times,\n"
+            + "            *\n"
+            + "            * it was the age of foolishness,\n"
+            + "            *\n"
+            + "            * it was the epoch of incredulity\n"
+            + "            */"
+        );
+        assertEquals(
+            "           /*\n"
+            + "            * it was the worst of times, it was the age of foolishness, it\n"
+            + "            * was the epoch of incredulity\n"
+            + "            */\n",
+            formattedComment
+        );
+    }
+
+    @Test
+    public void someLinesHaveGaps() {
+        String formattedComment = cw.wrap(
+            "            // it was the worst of times,\n"
+            + "            \n"
+            + "            // it was the age of foolishness,\n"
+            + "            \n"
+            + "            // it was the epoch of incredulity\n"
+        );
+        assertEquals(
+            "            // it was the worst of times, it was the age of foolishness, it\n"
+            + "            // was the epoch of incredulity\n",
+            formattedComment
+        );
+    }
+
+    @Test
+    public void singleLineCommentIsReturnedAsIs() {
+        String formattedComment = cw.wrap(
+            "            // it was the worst of times,"
+            + " it was the age of foolishness,\n"
+        );
+        assertEquals(
+            "            // it was the worst of times,"
+            + " it was the age of foolishness,\n",
+            formattedComment
+        );
+    }
+
+    @Test
+    public void emptyStringIsReturnedAsIs() {
+        String formattedComment = cw.wrap(
+            ""
+        );
+        assertEquals(
+            "",
+            formattedComment
+        );
+    }
 }
